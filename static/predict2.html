@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    
+    <title>covid classifier</title>
+    <style>
+        *{
+            font-size:30px;
+            padding: 0;
+            margin: 0;
+     }
+     h1{
+      color:white; 
+      background-color: CornflowerBlue;
+      font-size:100px;
+      padding: 3px;
+     }
+     ul{
+      width: auto;
+      background-color: #000000;
+     }
+     li{
+        display: inline-block;
+        padding: 15px 30px;
+     }
+     a{
+      text-align: center;
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 1.2vw;
+     }
+     a:hover{
+      color:#F0c330;
+      transition: 0.5s;
+     } 
+    </style>
+
+</head>
+
+<body>
+   <h1>COVID test</h1>
+   <ul>
+    <li><a href="http://127.0.0.1:5000/static/index.html">Home</a></li>
+    <li><a href="http://127.0.0.1:5000/static/predict.html">CT-Scan</a></li>
+    <li><a href="http://127.0.0.1:5000/static/predict2.html">X-ray</a></li>
+   </ul>
+   <h2>X-RAY</h2>
+   <input id="image-selector" type="file">
+   <button id="predict-button">Predict</button>
+   <p style="font-weight:bold">Predictions</p>
+   <p> prediction: <span id="covid-prediction"></span></p> 
+   	
+   <img id="selected-image" src=""/>
+
+   <script src="https://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+   <script>
+       let base64Image;
+       $("#image-selector").change(function() {
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            let dataURL = reader.result;
+            $('#selected-image').attr("src",dataURL);
+            base64Image = dataURL.replace("data:image/png;base64,","");
+            console.log(base64Image);
+        }
+        reader.readAsDataURL($("#image-selector")[0].files[0]);
+        $("#covid-prediction").text("");
+       });
+       
+        $("#predict-button").click(function(event){
+               
+                let message = {
+                    image: base64Image
+                }
+                console.log(message);
+                $.post("http://127.0.0.1:5000/predict2", JSON.stringify(message), function(response){
+                    $("#covid-prediction").text(response.prediction.COVID);
+	               
+                    console.log(response);
+                });
+        });
+
+   </script>
+</body>
+
+</html>
